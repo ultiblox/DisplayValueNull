@@ -1,0 +1,55 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: |
+          arduino-cli lib install "DisplayValueCommon"
+          arduino-cli lib install "SerialLogger"
+
+      - name: Compile examples
+        run: |
+          for example in $(find ./examples -name "*.ino"); do
+            arduino-cli compile --fqbn arduino:avr:uno "$example"
+          done
+
+      - name: Run lint check
+        run: |
+          # Example linting command (can be customized)
+          echo "Running lint checks..."
+          # Add specific lint commands if required
+
+      - name: Increment version if changes detected
+        run: |
+          chmod +x version-increment.sh
+          ./version-increment.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push changes
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git push origin main --follow-tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
