@@ -8,18 +8,31 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write  # Required for tagging and creating releases
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Set up Arduino CLI
-        uses: arduino/setup-arduino-cli@v1
-        with:
-          version: latest
+      - name: Set Up Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          sudo mv bin/arduino-cli /usr/local/bin/
+
+      - name: Install Arduino AVR Core
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
 
       - name: Install dependencies
         run: |
@@ -34,22 +47,19 @@ jobs:
 
       - name: Run lint check
         run: |
-          # Example linting command (can be customized)
           echo "Running lint checks..."
           # Add specific lint commands if required
 
       - name: Increment version if changes detected
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod +x version-increment.sh
           ./version-increment.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push changes
         if: success() && github.ref == 'refs/heads/main'
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git push origin main --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push origin main --follow-tags
