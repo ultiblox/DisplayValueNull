@@ -23,8 +23,8 @@ This library is compatible with the `DisplayValueLCD` and `DisplayValueOLED` lib
 
 1. Open the **Arduino IDE**.
 2. Go to **Tools > Manage Libraries**.
-3. Search for **UltiBlox DisplayValueNull** and click **Install**.
-4. Access example sketches under **File > Examples > UltiBlox DisplayValueNull**.
+3. Search for **UltiBlox-DisplayValueNull** and click **Install**.
+4. Access example sketches under **File > Examples > UltiBlox-DisplayValueNull**.
 
 ### Option 2: Manual Installation (for Development and Customization)
 
