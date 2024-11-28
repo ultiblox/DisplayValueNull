@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Set Arduino libraries folder (default for Linux)
-ARDUINO_LIBRARIES_DIR="$HOME/Arduino/libraries"
+# Load environment variables
+source ./env.sh
 
 # Check if Arduino libraries folder exists
 if [ ! -d "$ARDUINO_LIBRARIES_DIR" ]; then
@@ -9,16 +9,12 @@ if [ ! -d "$ARDUINO_LIBRARIES_DIR" ]; then
     exit 1
 fi
 
-# Define the library name dynamically
-LIBRARY_NAME="DisplayValueNull"
-TARGET_NAME="UltiBlox-$LIBRARY_NAME"
-
 # Install the main library
-if [ -d "$ARDUINO_LIBRARIES_DIR/$TARGET_NAME" ]; then
-    echo "$TARGET_NAME already installed."
+if [ -d "$ARDUINO_LIBRARIES_DIR/$LIBRARY_NAME" ]; then
+    echo "$LIBRARY_NAME already installed."
 else
-    cp -r "$(pwd)" "$ARDUINO_LIBRARIES_DIR/$TARGET_NAME"
-    echo "$TARGET_NAME installed to $ARDUINO_LIBRARIES_DIR"
+    cp -r "$(pwd)" "$ARDUINO_LIBRARIES_DIR/$LIBRARY_NAME"
+    echo "$LIBRARY_NAME installed to $ARDUINO_LIBRARIES_DIR"
 fi
 
 # Process dependencies
