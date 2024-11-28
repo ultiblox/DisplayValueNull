@@ -76,7 +76,7 @@ jobs:
         bash build.sh
 
   build-consumers:
-    needs: build
+    needs: [test-install-symlink, test-install]
     runs-on: ubuntu-latest
 
     steps:
