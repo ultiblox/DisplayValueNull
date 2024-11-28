@@ -1,4 +1,4 @@
-name: Build, Test Consumers, and Release
+name: Test and Release
 
 on:
   push:
@@ -25,6 +25,10 @@ jobs:
       run: |
         arduino-cli core update-index
         arduino-cli core install arduino:avr
+
+    - name: Create Arduino Libraries Directory
+      run: |
+        mkdir -p ~/Arduino/libraries
 
     - name: Run Prepare Script
       run: |
@@ -55,6 +59,10 @@ jobs:
         arduino-cli core update-index
         arduino-cli core install arduino:avr
 
+    - name: Create Arduino Libraries Directory
+      run: |
+        mkdir -p ~/Arduino/libraries
+
     - name: Run Prepare Script
       run: |
         bash prepare.sh
@@ -67,32 +75,6 @@ jobs:
       run: |
         bash build.sh
 
-  build:
-    needs: [test-install, test-install-symlink]
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Install Arduino CLI
-      run: |
-        curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
-        sudo mv bin/arduino-cli /usr/local/bin/
-
-    - name: Install Arduino AVR Core
-      run: |
-        arduino-cli core update-index
-        arduino-cli core install arduino:avr
-
-    - name: Run Prepare Script
-      run: |
-        bash prepare.sh
-
-    - name: Run Build Script
-      run: |
-        bash build.sh
-
   build-consumers:
     needs: build
     runs-on: ubuntu-latest
@@ -101,12 +83,24 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Create Arduino Libraries Directory
+      run: |
+        mkdir -p ~/Arduino/libraries
+
+    - name: Run Prepare Script
+      run: |
+        bash prepare.sh
+
+    - name: Run Install Script
+      run: |
+        bash install.sh
+        
     - name: Run Build Consumers Script
       run: |
         bash build-consumers.sh
 
   release:
-    needs: [build, build-consumers]
+    needs: [build-consumers]
     runs-on: ubuntu-latest
 
     steps:
