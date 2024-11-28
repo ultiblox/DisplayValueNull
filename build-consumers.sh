@@ -34,10 +34,16 @@ for REPO in "${CONSUMER_REPOS[@]}"; do
     echo "No pre-build script found for $REPO."
   fi
 
-  # Run the prepare and build scripts if they exist
+  # Run the prepare script
   if [ -f "prepare.sh" ]; then
     echo "Running prepare.sh for $REPO..."
     bash prepare.sh || { echo "Error: prepare.sh failed for $REPO"; exit 1; }
+  fi
+
+  # Run the install script
+  if [ -f "install.sh" ]; then
+    echo "Running install.sh for $REPO..."
+    bash install.sh || { echo "Error: install.sh failed for $REPO"; exit 1; }
   fi
 
   if [ -f "build.sh" ]; then
